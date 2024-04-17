@@ -3,8 +3,7 @@
    end in an error.
 */
 const handleError = (message) => {
-    document.getElementById('errorMessage').textContent = message;
-    document.getElementById('domoMessage').classList.remove('hidden');
+    console.log(message);
   };
   
   /* Sends post requests to the server using fetch. Will look for various
@@ -20,7 +19,6 @@ const handleError = (message) => {
     });
   
     const result = await response.json();
-    document.getElementById('domoMessage').classList.add('hidden');
   
     if(result.redirect) {
       window.location = result.redirect;
@@ -35,18 +33,7 @@ const handleError = (message) => {
     }
   };
 
-  const sendDelete = async (url) => {
-    await fetch(url, { method: 'DELETE' });
-    console.log('deleted resource');
-  }
-
-  const hideError = () => {
-    document.getElementById('domoMessage').classList.add('hidden');
-  };
-
   module.exports = {
     handleError,
     sendPost,
-    sendDelete,
-    hideError,
   }
