@@ -1,0 +1,37 @@
+Rhythm Clicker:
+
+MPV:
+log in and authenticate user x
+Data to track:
+    - score x
+    - highest combo
+
+Songs? Will ask Austin.
+
+Easiest:
+    - count every time player hits a beat
+
+Ideal:
+    - count every time player hits a 3rd beat
+
+Each song's data need to be tracked
+    - BPM
+    - Where beat one is (in seconds)
+
+length = 128
+bpm = 120
+{
+    seconds_between_beats = 60/bpm;
+    total_duration_of_one_measure = 4 * seconds_between_beats;
+
+    the correct timing would be starting at:
+    total_duration_of_one_measure * 0.75 + total_duration_of_one_measure (for each timing afterwards)
+}
+
+Combo system
+Store to buy more songs
+Premium feature: premium users can access to more songs?
+
+Stretch:
+Leaderboard with websockets
+Really cool visual for game

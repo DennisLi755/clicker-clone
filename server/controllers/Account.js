@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const models = require('../models');
 
 const { Account } = models;
@@ -24,7 +25,7 @@ const login = (req, res) => {
 
     req.session.account = Account.toAPI(account);
 
-    return res.json({ redirect: '/maker' });
+    return res.json({ redirect: '/game' });
   });
 };
 
@@ -46,7 +47,7 @@ const signup = async (req, res) => {
     const newAccount = new Account({ username, password: hash });
     await newAccount.save();
     req.session.account = Account.toAPI(newAccount);
-    return res.json({ redirect: '/maker' });
+    return res.json({ redirect: '/game' });
   } catch (err) {
     console.log(err);
     if (err.code === 11000) {
@@ -56,9 +57,25 @@ const signup = async (req, res) => {
   }
 };
 
+const gamePage = async (req, res) => res.render('app');
+
+const getScore = async (req, res) => {
+  try {
+    const query = { _id: new mongoose.Types.ObjectId(req.session.account._id) };
+    const docs = await Account.find(query).select('score').lean().exec();
+  
+    return res.json({ score: docs[0].score });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: "Error retrieving score!" });
+  }
+}
+
 module.exports = {
   loginPage,
   login,
   logout,
   signup,
+  gamePage,
+  getScore
 };
