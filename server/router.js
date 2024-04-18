@@ -2,7 +2,8 @@ const controllers = require('./controllers');
 const mid = require('./middleware');
 
 const router = (app) => {
-  app.get('/getScore', mid.requiresLogin, controllers.Account.getScore);
+  app.get('/score', mid.requiresLogin, controllers.Account.getScore);
+  app.post('/score', mid.requiresLogin, controllers.Account.updateScore);
 
   app.get('/login', mid.requiresSecure, mid.requiresLogout, controllers.Account.loginPage);
   app.post('/login', mid.requiresSecure, mid.requiresLogout, controllers.Account.login);
