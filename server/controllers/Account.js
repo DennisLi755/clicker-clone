@@ -6,7 +6,7 @@ const { Account } = models;
 const loginPage = (req, res) => res.render('login');
 
 const logout = (req, res) => {
-  console.log("in logout function");
+  console.log('in logout function');
   req.session.destroy();
   res.redirect('/');
 };
@@ -64,24 +64,28 @@ const getScore = async (req, res) => {
   try {
     const query = { _id: new mongoose.Types.ObjectId(req.session.account._id) };
     const docs = await Account.find(query).select('score').lean().exec();
-    console.log("in get score");
-  
+    console.log('in get score');
+
     return res.json({ score: docs[0].score });
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ error: "Error retrieving score!" });
+    return res.status(500).json({ error: 'Error retrieving score!' });
   }
-}
+};
 
 const updateScore = async (req, res) => {
   try {
-    console.log("update score " + req.body.score);
-    await Account.findOneAndUpdate({ _id: new mongoose.Types.ObjectId(req.session.account._id) }, { $set: { score: req.body.score }}, {new: true}).exec();
+    console.log(`update score ${req.body.score}`);
+    await Account.findOneAndUpdate(
+      { _id: new mongoose.Types.ObjectId(req.session.account._id) },
+      { $set: { score: req.body.score } },
+      { new: true },
+    ).exec();
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ error: "An error has occurred. " });
   }
-}
+  return res.status(500).json({ error: 'An error has occurred. ' });
+};
 
 module.exports = {
   loginPage,
