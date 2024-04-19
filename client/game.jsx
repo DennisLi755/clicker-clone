@@ -9,11 +9,11 @@ const Button = ({score}) => {
     )
 }
 
-const handleLogout = (e, score) => {
-    //e.preventDefault();
+const handleLogout = (score) => {
     console.log('logout button pressed');
     helper.sendPost('/score', { score });
     return false;
+
 }
 
 const App = () => {
@@ -34,12 +34,11 @@ const App = () => {
         setScore(score++);
     }
 
-    const logoutButton = document.getElementById('logoutButton');
-
-    logoutButton.addEventListener('click', (e) => handleLogout(e, score));
-
     return (
         <>
+            <nav><a href="/login"></a>
+                <div class="navlink"><a onClick={() => handleLogout(score)} id="logoutButton" href="/logout">Log out</a></div>
+            </nav>
             <h1>This is the game page.</h1>
             <p>Score: {score}</p>
             <Button score={addScore} />
