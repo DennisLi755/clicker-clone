@@ -39,18 +39,16 @@ const AccountSchema = new mongoose.Schema({
   },
   powerUps: {
     type: Object,
-    default: {}
-  },
-  powerUpData: {
-    type: Object,
     default: {
       AutoClicker: {
+        Unlocked: false,
         UpdatedCost: 10,
         UpdatedIncrement: 1,
       },
       MoreScore: {
-          UpdatedCost: 20,
-          UpdatedIncrement: 5
+        Unlocked: false,
+        UpdatedCost: 20,
+        UpdatedIncrement: 5
       }
     }
   },

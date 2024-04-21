@@ -31,7 +31,7 @@ const Button = ({score}) => {
     )
 }
 
-const handleLogout = (score, powerUps, powerUpData) => {
+const handleLogout = (score, powerUps) => {
     console.log('logout button pressed');
     helper.sendPost('/score', { score });
     helper.sendPost('/powerups', { powerUps });
@@ -41,13 +41,14 @@ const handleLogout = (score, powerUps, powerUpData) => {
 
 const App = () => {
     let [score, setScore] = useState(0);
-    let [powerUps, setPowerUps] = useState({});
-    const [powerUpData, setPowerUpData] = useState({
+    const [powerUps, setPowerUps] = useState({
         AutoClicker: {
+            Unlocked: false,
             UpdatedCost: 10,
             UpdatedIncrement: 1,
         },
         MoreScore: {
+            Unlocked: false,
             UpdatedCost: 20,
             UpdatedIncrement: 5
         }
@@ -57,51 +58,49 @@ const App = () => {
     const [scoreAddAuto, setScoreAddAuto] = useState(0);
 
     useEffect(() => {
-        const loadScore = async () => {
-            const response = await fetch('/score');
-            const data = await response.json();
-            console.log(data.score);
-            setScore(data.score);
-        }
-        // logic for loading bought power ups
-        const loadPowerUpsUnlocked = async () => {
+        // logic for loading score and power ups
+        const loadData = async () => {
             const response = await fetch('/powerups');
             const data = await response.json();
             console.log(data.powerUps);
             setPowerUps(data.powerUps);
+            if (data.powerUps.AutoClicker.Unlocked) {
+                setScoreAddAuto(data.powerUps.AutoClicker.UpdatedIncrement / 2);
+            }
+            if (data.powerUps.MoreScore.Unlocked) {
+                setScoreAdd(data.powerUps.MoreScore.UpdatedIncrement / 2);
+            }
+
+            const scoreResponse = await fetch('/score');
+            const scoreData = await scoreResponse.json();
+            setScore(scoreData.score);
         }
-        // logic for loading power up data
-        loadScore();
-        loadPowerUpsUnlocked();
+        loadData();
     }, []);
 
     useEffect(() => {
-        console.log('in here');
-        console.log(powerUps['AutoClicker']);
-        if (powerUps['AutoClicker']) {
+        if (powerUps.AutoClicker.Unlocked) {
             const timer = setTimeout(() => ticking && setScore(score + scoreAddAuto), 1e3);
             return () => clearTimeout(timer);
         }
     }, [score, ticking]);
 
     const addScore = () => {
-        console.log("Auto Clicker: " + powerUps.AutoClicker);
-        console.log('More Score: ' + powerUps.MoreScore);
+        console.log("Auto Clicker: " + powerUps.AutoClicker.Unlocked);
+        console.log('More Score: ' + powerUps.MoreScore.Unlocked);
         setScore(score + scoreAdd);
     }
 
     const autoClickerBuy = () => {
-        if (score >= powerUpData.AutoClicker.UpdatedCost) {
-            if (!powerUps.AutoClicker) {
-                setPowerUps({ ...powerUps, "AutoClicker": true });
-            }
-            setScoreAddAuto(powerUpData.AutoClicker.UpdatedIncrement);
-            setScore(score -= powerUpData.AutoClicker.UpdatedCost);
-            let newCost = powerUpData.AutoClicker.UpdatedCost * 2;
-            let newIncrement = powerUpData.AutoClicker.UpdatedIncrement * 2;
-            setPowerUpData({
-                ...powerUpData,
+        if (score >= powerUps.AutoClicker.UpdatedCost) {
+            setScoreAddAuto(powerUps.AutoClicker.UpdatedIncrement);
+            setScore(score -= powerUps.AutoClicker.UpdatedCost);
+            let newCost = powerUps.AutoClicker.UpdatedCost * 2;
+            let newIncrement = powerUps.AutoClicker.UpdatedIncrement * 2;
+            setPowerUps({
+                ...powerUps,
                 AutoClicker: {
+                    Unlocked: true,
                     UpdatedCost: newCost,
                     UpdatedIncrement: newIncrement
                 }
@@ -111,17 +110,15 @@ const App = () => {
     }
 
     const moreScoreBuy = () => {
-        if (score >= powerUpData.MoreScore.UpdatedCost) {
-            setScore(score -= powerUpData.MoreScore.UpdatedCost);
-            setScoreAdd(powerUpData.MoreScore.UpdatedIncrement);
-            if (!powerUps.moreScoreBuy) {
-                setPowerUps({ ...powerUps, "moreScoreBuy": true });
-            }
-            let newCost = powerUpData.MoreScore.UpdatedCost * 2;
-            let newIncrement = powerUpData.MoreScore.UpdatedIncrement * 2;
-            setPowerUpData({
-                ...powerUpData,
+        if (score >= powerUps.MoreScore.UpdatedCost) {
+            setScore(score -= powerUps.MoreScore.UpdatedCost);
+            setScoreAdd(powerUps.MoreScore.UpdatedIncrement);
+            let newCost = powerUps.MoreScore.UpdatedCost * 2;
+            let newIncrement = powerUps.MoreScore.UpdatedIncrement * 2;
+            setPowerUps({
+                ...powerUps,
                 MoreScore: {
+                    Unlocked: true,
                     UpdatedCost: newCost,
                     UpdatedIncrement: newIncrement
                 }
@@ -134,13 +131,13 @@ const App = () => {
     const data = {
         "AutoClicker": {
             func: autoClickerBuy,
-            cost: powerUpData.AutoClicker.UpdatedCost,
-            increment: powerUpData.AutoClicker.UpdatedIncrement
+            cost: powerUps.AutoClicker.UpdatedCost,
+            increment: powerUps.AutoClicker.UpdatedIncrement
         },
         "MoreScore": {
             func: moreScoreBuy,
-            cost: powerUpData.MoreScore.UpdatedCost,
-            increment: powerUpData.MoreScore.UpdatedIncrement
+            cost: powerUps.MoreScore.UpdatedCost,
+            increment: powerUps.MoreScore.UpdatedIncrement
         }
     }
     return (
