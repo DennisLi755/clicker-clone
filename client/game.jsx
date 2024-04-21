@@ -31,9 +31,10 @@ const Button = ({score}) => {
     )
 }
 
-const handleLogout = (score) => {
+const handleLogout = (score, powerUps, powerUpData) => {
     console.log('logout button pressed');
     helper.sendPost('/score', { score });
+    helper.sendPost('/powerups', { powerUps });
     return false;
 
 }
@@ -63,19 +64,29 @@ const App = () => {
             setScore(data.score);
         }
         // logic for loading bought power ups
+        const loadPowerUpsUnlocked = async () => {
+            const response = await fetch('/powerups');
+            const data = await response.json();
+            console.log(data.powerUps);
+            setPowerUps(data.powerUps);
+        }
         // logic for loading power up data
         loadScore();
-    }, [])
+        loadPowerUpsUnlocked();
+    }, []);
 
     useEffect(() => {
-        if (powerUps.AutoClicker) {
+        console.log('in here');
+        console.log(powerUps['AutoClicker']);
+        if (powerUps['AutoClicker']) {
             const timer = setTimeout(() => ticking && setScore(score + scoreAddAuto), 1e3);
             return () => clearTimeout(timer);
         }
-    }, [score, ticking])
+    }, [score, ticking]);
 
     const addScore = () => {
-        console.log(score);
+        console.log("Auto Clicker: " + powerUps.AutoClicker);
+        console.log('More Score: ' + powerUps.MoreScore);
         setScore(score + scoreAdd);
     }
 
@@ -135,7 +146,7 @@ const App = () => {
     return (
         <>
             <nav><a href="/login"></a>
-                <div class="navlink"><a onClick={() => handleLogout(score)} id="logoutButton" href="/logout">Log out</a></div>
+                <div class="navlink"><a onClick={() => handleLogout(score, powerUps)} id="logoutButton" href="/logout">Log out</a></div>
             </nav>
             <h1>This is the game page.</h1>
             <p>Score: {score}</p>

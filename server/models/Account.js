@@ -37,9 +37,22 @@ const AccountSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-  highestCombo: {
-    type: Number,
-    default: 0,
+  powerUps: {
+    type: Object,
+    default: {}
+  },
+  powerUpData: {
+    type: Object,
+    default: {
+      AutoClicker: {
+        UpdatedCost: 10,
+        UpdatedIncrement: 1,
+      },
+      MoreScore: {
+          UpdatedCost: 20,
+          UpdatedIncrement: 5
+      }
+    }
   },
   createdDate: {
     type: Date,

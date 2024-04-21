@@ -87,6 +87,32 @@ const updateScore = async (req, res) => {
   return res.status(500).json({ error: 'An error has occurred. ' });
 };
 
+const getPowerUps = async (req, res) => {
+  try {
+    const query = { _id: new mongoose.Types.ObjectId(req.session.account._id) };
+    const docs = await Account.find(query).select('powerUps').lean().exec();
+
+    return res.json({ powerUps: docs[0].powerUps });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: 'Error retrieving score!' });
+  }
+};
+
+const updatePowerUps = async (req, res) => {
+  try {
+    console.log(req.body);
+    await Account.findOneAndUpdate(
+      { _id: new mongoose.Types.ObjectId(req.session.account._id) },
+      { $set: { powerUps: req.body.powerUps } },
+      { new: true },
+    ).exec();
+  } catch (err) {
+    console.log(err);
+  }
+  return res.status(500).json({ error: 'An error has occurred. ' });
+};
+
 module.exports = {
   loginPage,
   login,
@@ -95,4 +121,6 @@ module.exports = {
   gamePage,
   getScore,
   updateScore,
+  getPowerUps,
+  updatePowerUps,
 };
