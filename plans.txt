@@ -35,3 +35,4 @@ Premium feature: premium users can access to more songs?
 Stretch:
 Leaderboard with websockets
 Really cool visual for game
+
