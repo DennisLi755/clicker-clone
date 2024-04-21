@@ -36,3 +36,13 @@ Stretch:
 Leaderboard with websockets
 Really cool visual for game
 
+powerUpData: {
+    AutoClicker: {
+        updatedCost: x
+        updatedIncrement: y
+    },
+    MoreScore: {
+        updatedCost: x,
+        updatedIncrement: y
+    }
+}
