@@ -1,4 +1,4 @@
-# rhythm-clicker# Clicker Clone (IGME 430 Project 2) Prototype Documentation
+# Clicker Clone (IGME 430 Project 2) Prototype Documentation
 
 ## What is the intended purpose of your application?
 
