@@ -44,11 +44,19 @@ const AccountSchema = new mongoose.Schema({
         Unlocked: false,
         UpdatedCost: 10,
         UpdatedIncrement: 1,
+        Prem: false,
       },
       MoreScore: {
         Unlocked: false,
         UpdatedCost: 20,
-        UpdatedIncrement: 5
+        UpdatedIncrement: 5,
+        Prem: false,
+      },
+      Premium: {
+        Unlocked: false,
+        UpdatedCost: 30,
+        UpdatedIncrement: 10,
+        Prem: true,
       }
     }
   },
