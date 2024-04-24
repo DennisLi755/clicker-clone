@@ -183,7 +183,12 @@ const App = () => {
     return (
         <>
             <nav><a href="/login"></a>
-                <div class="navlink"><a onClick={() => handleLogout(score, powerUps)} id="logoutButton" href="/logout">Log out</a></div>
+                <div class="navlink">
+                    <a onClick={() => handleLogout(score, powerUps, userPremium)} id="logoutButton" href="/logout">Log out</a>
+                    {userPremium ? <input type="checkbox" id="premium" onClick={(() => setUserPremium(!userPremium))} checked/>
+                        : <input type="checkbox" id="premium" onClick={(() => setUserPremium(!userPremium))}/>}
+                    <label for="premium">Premium</label>
+                </div>
             </nav>
             <h1>This is the game page.</h1>
             <p>Score: {score}</p>
