@@ -32,10 +32,9 @@ const Button = ({score}) => {
     )
 }
 
-const handleLogout = (score, powerUps) => {
+const handleLogout = (score, powerUps, premium) => {
     console.log('logout button pressed');
-    helper.sendPost('/score', { score });
-    helper.sendPost('/powerups', { powerUps });
+    helper.sendPost('/user', { score, powerUps, premium });
     return false;
 
 }
@@ -65,24 +64,24 @@ const App = () => {
     const [ticking] = useState(true);
     const [scoreAdd, setScoreAdd] = useState(1);
     const [scoreAddAuto, setScoreAddAuto] = useState(0);
+    const [userPremium, setUserPremium] = useState(false);
 
     useEffect(() => {
         // logic for loading score and power ups
         const loadData = async () => {
-            const response = await fetch('/powerups');
+            // setScore(scoreData.score);
+            const response = await fetch('/user');
             const data = await response.json();
-            console.log(data.powerUps);
-            setPowerUps(data.powerUps);
-            if (data.powerUps.AutoClicker.Unlocked) {
-                setScoreAddAuto(data.powerUps.AutoClicker.UpdatedIncrement / 2);
+            console.log(data.user);
+            setPowerUps(data.user.powerUps);
+            if (data.user.powerUps.AutoClicker.Unlocked) {
+                setScoreAddAuto(data.user.powerUps.AutoClicker.UpdatedIncrement / 2);
             }
-            if (data.powerUps.MoreScore.Unlocked) {
-                setScoreAdd(data.powerUps.MoreScore.UpdatedIncrement / 2);
+            if (data.user.powerUps.MoreScore.Unlocked) {
+                setScoreAdd(data.user.powerUps.MoreScore.UpdatedIncrement / 2);
             }
-
-            const scoreResponse = await fetch('/score');
-            const scoreData = await scoreResponse.json();
-            setScore(scoreData.score);
+            setScore(data.user.score);
+            setUserPremium(data.user.premium);
         }
         loadData();
     }, []);
@@ -137,6 +136,11 @@ const App = () => {
     };
 
     const premiumBuy = () => {
+        if (!userPremium) {
+            alert('You must be a premium user to buy this item.');
+            return;
+        }
+
         if (score >= powerUps.Premium.UpdatedCost) {
             setScore(score -= powerUps.Premium.UpdatedCost);
             //setScoreAdd(powerUps.MoreScore.UpdatedIncrement);

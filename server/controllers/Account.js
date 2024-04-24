@@ -60,58 +60,32 @@ const signup = async (req, res) => {
 
 const gamePage = async (req, res) => res.render('app');
 
-const getScore = async (req, res) => {
+const getUser = async(req, res) => {
   try {
     const query = { _id: new mongoose.Types.ObjectId(req.session.account._id) };
-    const docs = await Account.find(query).select('score').lean().exec();
-    console.log('in get score');
+    const docs = await Account.find(query).select('username score powerUps premium').lean().exec();
+    console.log(docs[0]);
 
-    return res.json({ score: docs[0].score });
+    return res.json({ user: docs[0] });
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ error: 'Error retrieving score!' });
+    return res.status(500).json({ error: 'Error retrieving user!' });
   }
 };
 
-const updateScore = async (req, res) => {
-  try {
-    console.log(`update score ${req.body.score}`);
-    await Account.findOneAndUpdate(
-      { _id: new mongoose.Types.ObjectId(req.session.account._id) },
-      { $set: { score: req.body.score } },
-      { new: true },
-    ).exec();
-  } catch (err) {
-    console.log(err);
-  }
-  return res.status(500).json({ error: 'An error has occurred. ' });
-};
-
-const getPowerUps = async (req, res) => {
-  try {
-    const query = { _id: new mongoose.Types.ObjectId(req.session.account._id) };
-    const docs = await Account.find(query).select('powerUps').lean().exec();
-
-    return res.json({ powerUps: docs[0].powerUps });
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({ error: 'Error retrieving score!' });
-  }
-};
-
-const updatePowerUps = async (req, res) => {
+const updateUser = async(req, res) => {
   try {
     console.log(req.body);
     await Account.findOneAndUpdate(
       { _id: new mongoose.Types.ObjectId(req.session.account._id) },
-      { $set: { powerUps: req.body.powerUps } },
+      { $set: { powerUps: req.body.powerUps, score: req.body.score, premium: req.body.premium } },
       { new: true },
     ).exec();
   } catch (err) {
     console.log(err);
   }
   return res.status(500).json({ error: 'An error has occurred. ' });
-};
+}
 
 module.exports = {
   loginPage,
@@ -119,8 +93,6 @@ module.exports = {
   logout,
   signup,
   gamePage,
-  getScore,
-  updateScore,
-  getPowerUps,
-  updatePowerUps,
+  getUser,
+  updateUser
 };

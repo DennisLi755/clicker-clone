@@ -60,6 +60,10 @@ const AccountSchema = new mongoose.Schema({
       }
     }
   },
+  premium: {
+    type: Boolean,
+    default: false,
+  },
   createdDate: {
     type: Date,
     default: Date.now,
