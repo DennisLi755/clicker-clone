@@ -53,19 +53,22 @@ const handleSignup = (e) => {
 
 const ChangePasswordWindow = (props) => {
     return (
-        <form id="signupForm"
-            name="signupForm"
-            onSubmit={handleSignup}
-            action="/updatePassword"
-            method="POST"
-            className="mainForm"
-        >
-            <label htmlFor="pass">New Password: </label>
-            <input id="pass" type="password" name="pass" placeholder="password" />
-            <label htmlFor="pass">Retype New Password: </label>
-            <input id="pass2" type="password" name="pass2" placeholder="password" />
-            <input className="formSubmit" type="submit" value="Sign up" />
-        </form>
+        <>
+            <a id="changePasswordButton" href="/game">Back</a>
+            <form id="signupForm"
+                name="signupForm"
+                onSubmit={handleSignup}
+                action="/updatePassword"
+                method="POST"
+                className="mainForm"
+            >
+                <label htmlFor="pass">New Password: </label>
+                <input id="pass" type="password" name="pass" placeholder="password" />
+                <label htmlFor="pass">Retype New Password: </label>
+                <input id="pass2" type="password" name="pass2" placeholder="password" />
+                <input className="formSubmit" type="submit" value="Sign up" />
+            </form>
+        </>
     );
 };
 
