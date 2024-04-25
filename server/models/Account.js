@@ -57,8 +57,8 @@ const AccountSchema = new mongoose.Schema({
         UpdatedCost: 30,
         UpdatedIncrement: 10,
         Prem: true,
-      }
-    }
+      },
+    },
   },
   premium: {
     type: Boolean,

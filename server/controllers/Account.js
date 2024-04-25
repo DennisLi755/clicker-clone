@@ -60,7 +60,7 @@ const signup = async (req, res) => {
 
 const gamePage = async (req, res) => res.render('app');
 
-const getUser = async(req, res) => {
+const getUser = async (req, res) => {
   try {
     const query = { _id: new mongoose.Types.ObjectId(req.session.account._id) };
     const docs = await Account.find(query).select('username score powerUps premium').lean().exec();
@@ -72,19 +72,20 @@ const getUser = async(req, res) => {
   }
 };
 
-const updateUser = async(req, res) => {
+const updateUser = async (req, res) => {
   try {
-    console.log("body:" + req.body.score);
+    console.log(`body:${req.body.score}`);
     await Account.findOneAndUpdate(
       { _id: new mongoose.Types.ObjectId(req.session.account._id) },
       { $set: { powerUps: req.body.powerUps, score: req.body.score, premium: req.body.premium } },
       { new: true },
     ).exec();
+    return res.status(201).json({ message: 'User updated' });
   } catch (err) {
     console.log(err);
     return res.status(500).json({ error: 'An error has occurred. ' });
   }
-}
+};
 
 module.exports = {
   loginPage,
@@ -93,5 +94,5 @@ module.exports = {
   signup,
   gamePage,
   getUser,
-  updateUser
+  updateUser,
 };
