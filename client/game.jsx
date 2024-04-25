@@ -1,6 +1,6 @@
 const helper = require('./helper.js');
 const React = require('react');
-const { useState, useEffect } = React;
+const { useState, useEffect, useRef } = React;
 const { createRoot } = require('react-dom/client');
 
 const ShopItem = ({name, description, premium, cost, func}) => {
@@ -36,7 +36,6 @@ const handleLogout = (score, powerUps, premium) => {
     console.log('logout button pressed');
     helper.sendPost('/user', { score, powerUps, premium });
     return false;
-
 }
 
 const App = () => {
@@ -65,6 +64,9 @@ const App = () => {
     const [scoreAdd, setScoreAdd] = useState(1);
     const [scoreAddAuto, setScoreAddAuto] = useState(0);
     const [userPremium, setUserPremium] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [counter, setCounter] = useState(0);
+    const [addCounter] = useState(1);
 
     useEffect(() => {
         // logic for loading score and power ups
@@ -72,7 +74,6 @@ const App = () => {
             // setScore(scoreData.score);
             const response = await fetch('/user');
             const data = await response.json();
-            console.log(data.user);
             setPowerUps(data.user.powerUps);
             if (data.user.powerUps.AutoClicker.Unlocked) {
                 setScoreAddAuto(data.user.powerUps.AutoClicker.UpdatedIncrement / 2);
@@ -82,16 +83,29 @@ const App = () => {
             }
             setScore(data.user.score);
             setUserPremium(data.user.premium);
+            setLoading(true);
         }
         loadData();
+        
     }, []);
 
     useEffect(() => {
         if (powerUps.AutoClicker.Unlocked) {
-            const timer = setTimeout(() => ticking && setScore(score + scoreAddAuto), 1e3);
+            const timer = setTimeout(() => { ticking && setScore(score + scoreAddAuto); console.log(score); }, 1e3);
             return () => clearTimeout(timer);
         }
     }, [score, ticking]);
+
+    useEffect(() => {
+        if (loading) {
+            helper.sendPost('/user', { score, powerUps, premium: userPremium });
+            console.log('saved');
+            const timer = setTimeout(() => {
+                setCounter(counter + addCounter);
+            }, 20000);
+            return () => clearTimeout(timer);
+        }
+    }, [loading, counter]);
 
     const addScore = () => {
         setScore(score + scoreAdd);

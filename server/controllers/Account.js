@@ -64,7 +64,6 @@ const getUser = async(req, res) => {
   try {
     const query = { _id: new mongoose.Types.ObjectId(req.session.account._id) };
     const docs = await Account.find(query).select('username score powerUps premium').lean().exec();
-    console.log(docs[0]);
 
     return res.json({ user: docs[0] });
   } catch (err) {
@@ -75,7 +74,7 @@ const getUser = async(req, res) => {
 
 const updateUser = async(req, res) => {
   try {
-    console.log(req.body);
+    console.log("body:" + req.body.score);
     await Account.findOneAndUpdate(
       { _id: new mongoose.Types.ObjectId(req.session.account._id) },
       { $set: { powerUps: req.body.powerUps, score: req.body.score, premium: req.body.premium } },
@@ -83,8 +82,8 @@ const updateUser = async(req, res) => {
     ).exec();
   } catch (err) {
     console.log(err);
+    return res.status(500).json({ error: 'An error has occurred. ' });
   }
-  return res.status(500).json({ error: 'An error has occurred. ' });
 }
 
 module.exports = {
