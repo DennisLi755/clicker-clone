@@ -10,6 +10,8 @@ const router = (app) => {
 
   app.post('/signup', mid.requiresSecure, mid.requiresLogout, controllers.Account.signup);
 
+  app.post('/updatePassword', mid.requiresSecure, mid.requiresLogout, controllers.Account.updatePassword)
+
   app.get('/logout', mid.requiresLogin, controllers.Account.logout);
 
   // app.get('/maker', mid.requiresLogin, controllers.Domo.makerPage);

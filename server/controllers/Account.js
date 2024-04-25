@@ -58,6 +58,21 @@ const signup = async (req, res) => {
   }
 };
 
+const updatePassword = async (req, res) => {
+  try {
+    const hash = await Account.generateHash(req.body.pass);
+    await Account.findOneAndUpdate(
+      { _id: new mongoose.Types.ObjectId(req.session.account._id) },
+      { $set: { password: hash } },
+      { new: true },
+    ).exec();
+    return res.json({ redirect: '/game' });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: 'An error has occurred. ' });
+  }
+}
+
 const gamePage = async (req, res) => res.render('app');
 
 const getUser = async (req, res) => {
@@ -95,4 +110,5 @@ module.exports = {
   gamePage,
   getUser,
   updateUser,
+  updatePassword,
 };

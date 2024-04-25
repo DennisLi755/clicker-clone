@@ -93,7 +93,6 @@ const init = () => {
         root.render(<SignupWindow />);
         return false;
     });
-
     root.render(<LoginWindow />);
 }
 

@@ -32,6 +32,43 @@ const Button = ({score}) => {
     )
 }
 
+const handleSignup = (e) => {
+    e.preventDefault();
+    const pass = e.target.querySelector('#pass').value;
+    const pass2 = e.target.querySelector('#pass2').value;
+
+    if (!pass || !pass2) {
+        helper.handleError('All fields are required!');
+        return false;
+    }
+
+    if (!pass !== !pass2) {
+        helper.handleError('Passwords do not match!');
+        return false;
+    }
+
+    helper.sendPost(e.target.action, {pass, pass2});
+    return false;
+}
+
+const ChangePasswordWindow = (props) => {
+    return (
+        <form id="signupForm"
+            name="signupForm"
+            onSubmit={handleSignup}
+            action="/updatePassword"
+            method="POST"
+            className="mainForm"
+        >
+            <label htmlFor="pass">New Password: </label>
+            <input id="pass" type="password" name="pass" placeholder="password" />
+            <label htmlFor="pass">Retype New Password: </label>
+            <input id="pass2" type="password" name="pass2" placeholder="password" />
+            <input className="formSubmit" type="submit" value="Sign up" />
+        </form>
+    );
+};
+
 const handleLogout = (score, powerUps, premium) => {
     console.log('logout button pressed');
     helper.sendPost('/user', { score, powerUps, premium });
@@ -202,6 +239,7 @@ const App = () => {
                     {userPremium ? <input type="checkbox" id="premium" onClick={(() => setUserPremium(!userPremium))} checked/>
                         : <input type="checkbox" id="premium" onClick={(() => setUserPremium(!userPremium))}/>}
                     <label for="premium">Premium</label>
+                    
                 </div>
             </nav>
             <h1>This is the game page.</h1>
@@ -214,6 +252,12 @@ const App = () => {
 
 const init = () => {
     const root = createRoot(document.getElementById('app'));
+    const changePasswordButton = document.getElementById('changePasswordButton');
+    changePasswordButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        root.render(<ChangePasswordWindow />)
+        return false;
+    });
     root.render(<App />);
 };
 
