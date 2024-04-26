@@ -3,6 +3,26 @@ const React = require('react');
 const { useState, useEffect, useRef } = React;
 const { createRoot } = require('react-dom/client');
 
+const BoardItem = ({name, score}) => {
+    return (
+        <ul>
+            <li>Name: {name}</li>
+            <li>Score: {score}</li>
+        </ul>
+    )
+}
+
+const LeaderBoard = ({users}) => {
+    return (
+        <>
+            <h2>LeaderBoard</h2>
+            {users.slice(0, 5).map((user) => (
+                <BoardItem name={user.username} score={user.score}/>
+            ))}
+        </>
+    )
+}
+
 const ShopItem = ({name, description, premium, cost, func}) => {
     return (
         <ul>
@@ -107,6 +127,15 @@ const App = () => {
     const [loading, setLoading] = useState(false);
     const [counter, setCounter] = useState(0);
     const [addCounter] = useState(1);
+    const [sortedUsers, setSortedUsers] = useState([]);
+
+    const loadAllUserData = async () => {
+        const response = await fetch('/allUsers');
+        const data = await response.json();
+        const userData = data.user;
+        const users = userData.sort((a, b) => b.score - a.score)
+        setSortedUsers(users);
+    }
 
     useEffect(() => {
         // logic for loading score and power ups
@@ -126,12 +155,16 @@ const App = () => {
             setLoading(true);
         }
         loadData();
-        
+        loadAllUserData();
     }, []);
 
     useEffect(() => {
+        console.log(sortedUsers);
+    }, [sortedUsers])
+
+    useEffect(() => {
         if (powerUps.AutoClicker.Unlocked) {
-            const timer = setTimeout(() => { ticking && setScore(score + scoreAddAuto); console.log(score); }, 1e3);
+            const timer = setTimeout(() => ticking && setScore(score + scoreAddAuto), 1e3);
             return () => clearTimeout(timer);
         }
     }, [score, ticking]);
@@ -140,9 +173,10 @@ const App = () => {
         if (loading) {
             helper.sendPost('/user', { score, powerUps, premium: userPremium });
             console.log('saved');
+            loadAllUserData();
             const timer = setTimeout(() => {
                 setCounter(counter + addCounter);
-            }, 20000);
+            }, 10000);
             return () => clearTimeout(timer);
         }
     }, [loading, counter]);
@@ -249,6 +283,7 @@ const App = () => {
             <p>Score: {score}</p>
             <Button score={addScore} />
             <Shop data={data} />
+            <LeaderBoard users={sortedUsers} />
         </>
     );
 };

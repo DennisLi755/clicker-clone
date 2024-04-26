@@ -102,6 +102,19 @@ const updateUser = async (req, res) => {
   }
 };
 
+const getAllUsers = async (req, res) => {
+  try {
+    //const query = { _id: new mongoose.Types.ObjectId(req.session.account._id) };
+    const docs = await Account.find().select("username score").lean().exec();
+    console.log(docs);
+
+    return res.json({ user: docs });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: 'Error retrieving user!' });
+  }
+}
+
 module.exports = {
   loginPage,
   login,
@@ -111,4 +124,5 @@ module.exports = {
   getUser,
   updateUser,
   updatePassword,
+  getAllUsers
 };
