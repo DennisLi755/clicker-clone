@@ -55,3 +55,19 @@ nav:nth-child(1) {
     transition: background-color 0.8s ease;
     background-color: #FF6060;
 }
+
+.item {
+    grid-column: 2;
+    text-align: center;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.board {
+    display: flex;
+    flex-direction:column;
+}

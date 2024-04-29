@@ -15,12 +15,12 @@ const BoardItem = ({name, score}) => {
 
 const LeaderBoard = ({users}) => {
     return (
-        <>
-            <h2>LeaderBoard</h2>
+        <div className="board">
+            <h2>Leaderboard</h2>
             {users.slice(0, 5).map((user) => (
                 <BoardItem name={user.username} score={user.score}/>
             ))}
-        </>
+        </div>
     )
 }
 
@@ -38,12 +38,12 @@ const ShopItem = ({name, description, premium, cost, func}) => {
 
 const Shop = ({data}) => {
     return (
-        <>
-            <h1>Here is the shop menu</h1>
+        <div className='board'>
+            <h2>Shop</h2>
             <ShopItem name={"Auto Clicker"} description={`Automatically increments score by ${data.AutoClicker.increment} every second`} premium={data.AutoClicker.premium} cost={data.AutoClicker.cost} func={data.AutoClicker.func} />
             <ShopItem name={"More score per click"} description={`Clicking increments score by ${data.MoreScore.increment}`} premium={data.MoreScore.premium} cost={data.MoreScore.cost} func={data.MoreScore.func} />
             <ShopItem name={"Placeholder"} description={`PlaceHolder: ${data.Premium.increment}`} premium={data.Premium.premium} cost={data.Premium.cost} func={data.Premium.func} />
-        </>
+        </div>
     )
 }
 
@@ -269,7 +269,7 @@ const App = () => {
         <>
             <nav>
                 <div class="navlink">
-                    <a onClick={() => handleLogout(score, powerUps, premium)} id="logoutButton" href="/logout">Log out</a>
+                    <a onClick={() => handleLogout(score, powerUps, userPremium)} id="logoutButton" href="/logout">Log out</a>
                 </div>
                 <div class="navlink"><a onClick={() => setChangeForm(!changeForm)} id="changePasswordButton">Change Password</a></div>
                 {userPremium ? <input type="checkbox" id="premium" onClick={(() => setUserPremium(!userPremium))} checked />
@@ -279,12 +279,14 @@ const App = () => {
             <h1>Clicker Clone</h1>
             {changeForm ? 
                 <ChangePasswordWindow /> :
-                <>
-                    <p>Score: {score}</p>
-                    <ClickButton score={addScore} />
-                    <Shop data={data} />
-                    <LeaderBoard users={sortedUsers} />
-                </>
+                <div className="container">
+                    <LeaderBoard className="item" users={sortedUsers} />
+                    <div className="item">
+                        <p>Score: {score}</p>
+                        <ClickButton score={addScore} />
+                    </div>
+                    <Shop className="item" data={data} />
+                </div>
             }
         </>
     );
