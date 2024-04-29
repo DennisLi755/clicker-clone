@@ -1,7 +1,8 @@
 const helper = require('./helper.js');
 const React = require('react');
-const { useState, useEffect, useRef } = React;
+const { useState, useEffect } = React;
 const { createRoot } = require('react-dom/client');
+import Button from 'react-bootstrap/Button';
 
 const BoardItem = ({name, score}) => {
     return (
@@ -30,7 +31,7 @@ const ShopItem = ({name, description, premium, cost, func}) => {
             <li>Description: {description}</li>
             <li>Premium?: {premium.toString()}</li>
             <li>Cost: {cost}</li>
-            <button onClick={func}>Buy me!</button>
+            <Button variant="primary" onClick={func}>Buy me!</Button>
         </ul>
     )
 }
@@ -46,7 +47,7 @@ const Shop = ({data}) => {
     )
 }
 
-const Button = ({score}) => {
+const ClickButton = ({score}) => {
     return (
         <button onClick={score}>Click me!</button>
     )
@@ -92,12 +93,6 @@ const ChangePasswordWindow = (props) => {
     );
 };
 
-const handleLogout = (score, powerUps, premium) => {
-    console.log('logout button pressed');
-    helper.sendPost('/user', { score, powerUps, premium });
-    return false;
-}
-
 const App = () => {
     let [score, setScore] = useState(0);
     const [powerUps, setPowerUps] = useState({
@@ -128,6 +123,8 @@ const App = () => {
     const [counter, setCounter] = useState(0);
     const [addCounter] = useState(1);
     const [sortedUsers, setSortedUsers] = useState([]);
+
+    const [changeForm, setChangeForm] = useState(false);
 
     const loadAllUserData = async () => {
         const response = await fetch('/allUsers');
@@ -270,32 +267,37 @@ const App = () => {
     }
     return (
         <>
-            <nav><a href="/login"></a>
+            <nav>
                 <div class="navlink">
-                    <a onClick={() => handleLogout(score, powerUps, userPremium)} id="logoutButton" href="/logout">Log out</a>
-                    {userPremium ? <input type="checkbox" id="premium" onClick={(() => setUserPremium(!userPremium))} checked/>
-                        : <input type="checkbox" id="premium" onClick={(() => setUserPremium(!userPremium))}/>}
-                    <label for="premium">Premium</label>
-                    
+                    <a onClick={() => handleLogout(score, powerUps, premium)} id="logoutButton" href="/logout">Log out</a>
                 </div>
+                <div class="navlink"><a onClick={() => setChangeForm(!changeForm)} id="changePasswordButton">Change Password</a></div>
+                {userPremium ? <input type="checkbox" id="premium" onClick={(() => setUserPremium(!userPremium))} checked />
+                    : <input type="checkbox" id="premium" onClick={(() => setUserPremium(!userPremium))} />}
+                <label for="premium">Premium</label>
             </nav>
-            <h1>This is the game page.</h1>
-            <p>Score: {score}</p>
-            <Button score={addScore} />
-            <Shop data={data} />
-            <LeaderBoard users={sortedUsers} />
+            <h1>Clicker Clone</h1>
+            {changeForm ? 
+                <ChangePasswordWindow /> :
+                <>
+                    <p>Score: {score}</p>
+                    <ClickButton score={addScore} />
+                    <Shop data={data} />
+                    <LeaderBoard users={sortedUsers} />
+                </>
+            }
         </>
     );
 };
 
 const init = () => {
     const root = createRoot(document.getElementById('app'));
-    const changePasswordButton = document.getElementById('changePasswordButton');
-    changePasswordButton.addEventListener('click', (e) => {
-        e.preventDefault();
-        root.render(<ChangePasswordWindow />)
-        return false;
-    });
+    // const changePasswordButton = document.getElementById('changePasswordButton');
+    // changePasswordButton.addEventListener('click', (e) => {
+    //     e.preventDefault();
+    //     root.render(<ChangePasswordWindow />);
+    //     return false;
+    // });
     root.render(<App />);
 };
 
