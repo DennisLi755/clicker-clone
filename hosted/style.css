@@ -29,6 +29,19 @@ h1 {
     text-align: center;
 }
 
+.hidden {
+    display: none;
+}
+
+#errorMessage {
+    color: red;
+    text-align: center;
+}
+
+.inputLabel {
+    margin-left: 2%;
+}
+
 nav:nth-child(1) {
     padding-left: 25px;
 }
@@ -37,7 +50,6 @@ nav:nth-child(1) {
     padding: 5px;
     padding-top: 12px;
     padding-left: 20px;
-    color: white;
     font-size: 1.3em;
     float: left;
 }
@@ -47,13 +59,6 @@ nav:nth-child(1) {
     text-decoration: none;
     padding: 5px;
     border-radius: 4px;
-    background-color: #FF6060;
-    transition: background-color 0.4s ease;
-}
-
-.navlink a:hover {
-    transition: background-color 0.8s ease;
-    background-color: #FF6060;
 }
 
 .item {
@@ -70,4 +75,22 @@ nav:nth-child(1) {
 .board {
     display: flex;
     flex-direction:column;
+}
+
+#clickButton {
+    background-color: #FF6060;
+    border: none;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    border-radius: 50%;
+    width: 50%;
+}
+
+ul {
+    list-style-type: none;
 }

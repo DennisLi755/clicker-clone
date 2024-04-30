@@ -57,10 +57,12 @@ const signup = async (req, res) => {
     return res.status(500).json({ error: 'An error has occured!' });
   }
 };
-
+//Function for updating a password
 const updatePassword = async (req, res) => {
   try {
+    //inputted password is hashed
     const hash = await Account.generateHash(req.body.pass);
+    //Update the users new password with the hashed data
     await Account.findOneAndUpdate(
       { _id: new mongoose.Types.ObjectId(req.session.account._id) },
       { $set: { password: hash } },
@@ -71,10 +73,11 @@ const updatePassword = async (req, res) => {
     console.log(err);
     return res.status(500).json({ error: 'An error has occurred. ' });
   }
-}
+};
 
 const gamePage = async (req, res) => res.render('app');
 
+//Gets a single user from the id
 const getUser = async (req, res) => {
   try {
     const query = { _id: new mongoose.Types.ObjectId(req.session.account._id) };
@@ -87,6 +90,7 @@ const getUser = async (req, res) => {
   }
 };
 
+//Updates a user from the id
 const updateUser = async (req, res) => {
   try {
     console.log(`body:${req.body.score}`);
@@ -102,10 +106,10 @@ const updateUser = async (req, res) => {
   }
 };
 
+//Get all users
 const getAllUsers = async (req, res) => {
   try {
-    //const query = { _id: new mongoose.Types.ObjectId(req.session.account._id) };
-    const docs = await Account.find().select("username score").lean().exec();
+    const docs = await Account.find().select('username score').lean().exec();
     console.log(docs);
 
     return res.json({ user: docs });
@@ -113,7 +117,7 @@ const getAllUsers = async (req, res) => {
     console.log(err);
     return res.status(500).json({ error: 'Error retrieving user!' });
   }
-}
+};
 
 module.exports = {
   loginPage,
@@ -124,5 +128,5 @@ module.exports = {
   getUser,
   updateUser,
   updatePassword,
-  getAllUsers
+  getAllUsers,
 };

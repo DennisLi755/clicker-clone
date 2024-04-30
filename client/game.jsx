@@ -2,99 +2,15 @@ const helper = require('./helper.js');
 const React = require('react');
 const { useState, useEffect } = React;
 const { createRoot } = require('react-dom/client');
-import Button from 'react-bootstrap/Button';
-
-const BoardItem = ({name, score}) => {
-    return (
-        <ul>
-            <li>Name: {name}</li>
-            <li>Score: {score}</li>
-        </ul>
-    )
-}
-
-const LeaderBoard = ({users}) => {
-    return (
-        <div className="board">
-            <h2>Leaderboard</h2>
-            {users.slice(0, 5).map((user) => (
-                <BoardItem name={user.username} score={user.score}/>
-            ))}
-        </div>
-    )
-}
-
-const ShopItem = ({name, description, premium, cost, func}) => {
-    return (
-        <ul>
-            <li>Name: {name}</li>
-            <li>Description: {description}</li>
-            <li>Premium?: {premium.toString()}</li>
-            <li>Cost: {cost}</li>
-            <Button variant="primary" onClick={func}>Buy me!</Button>
-        </ul>
-    )
-}
-
-const Shop = ({data}) => {
-    return (
-        <div className='board'>
-            <h2>Shop</h2>
-            <ShopItem name={"Auto Clicker"} description={`Automatically increments score by ${data.AutoClicker.increment} every second`} premium={data.AutoClicker.premium} cost={data.AutoClicker.cost} func={data.AutoClicker.func} />
-            <ShopItem name={"More score per click"} description={`Clicking increments score by ${data.MoreScore.increment}`} premium={data.MoreScore.premium} cost={data.MoreScore.cost} func={data.MoreScore.func} />
-            <ShopItem name={"Placeholder"} description={`PlaceHolder: ${data.Premium.increment}`} premium={data.Premium.premium} cost={data.Premium.cost} func={data.Premium.func} />
-        </div>
-    )
-}
-
-const ClickButton = ({score}) => {
-    return (
-        <button onClick={score}>Click me!</button>
-    )
-}
-
-const handleSignup = (e) => {
-    e.preventDefault();
-    const pass = e.target.querySelector('#pass').value;
-    const pass2 = e.target.querySelector('#pass2').value;
-
-    if (!pass || !pass2) {
-        helper.handleError('All fields are required!');
-        return false;
-    }
-
-    if (!pass !== !pass2) {
-        helper.handleError('Passwords do not match!');
-        return false;
-    }
-
-    helper.sendPost(e.target.action, {pass, pass2});
-    return false;
-}
-
-const ChangePasswordWindow = (props) => {
-    return (
-        <>
-            <a id="changePasswordButton" href="/game">Back</a>
-            <form id="signupForm"
-                name="signupForm"
-                onSubmit={handleSignup}
-                action="/updatePassword"
-                method="POST"
-                className="mainForm"
-            >
-                <label htmlFor="pass">New Password: </label>
-                <input id="pass" type="password" name="pass" placeholder="password" />
-                <label htmlFor="pass">Retype New Password: </label>
-                <input id="pass2" type="password" name="pass2" placeholder="password" />
-                <input className="formSubmit" type="submit" value="Sign up" />
-            </form>
-        </>
-    );
-};
+import ChangePasswordWindow from './Components/ChangePasswordWindow.jsx';
+import ClickButton from './Components/ClickButton.jsx';
+import Leaderboard from './Components/Leaderboard.jsx';
+import Shop from './Components/Shop.jsx';
 
 const App = () => {
+    //score state that is the user's current score
     let [score, setScore] = useState(0);
+    //powerups state that is the user's current powerup data
     const [powerUps, setPowerUps] = useState({
         AutoClicker: {
             Unlocked: false,
@@ -106,26 +22,28 @@ const App = () => {
             Unlocked: false,
             UpdatedCost: 20,
             UpdatedIncrement: 5,
-            Prem: false,
-        },
-        Premium: {
-            Unlocked: false,
-            UpdatedCost: 30,
-            UpdatedIncrement: 10,
             Prem: true,
         }
     });
+    //ticking state for tracking time elapsed (for the auto clicker upgrade)
     const [ticking] = useState(true);
+    //data from the more score per click upgrade that tracks the progress of the upgrade
     const [scoreAdd, setScoreAdd] = useState(1);
+    //data from the auto clicker upgrade that tracks the progress of the upgrade
     const [scoreAddAuto, setScoreAddAuto] = useState(0);
+    //data for whether the user is premium
     const [userPremium, setUserPremium] = useState(false);
+    //boolean so requests are only made after the page and data is loaded
     const [loading, setLoading] = useState(false);
+    //variables for purely invoking a useEffect hook (more about this explained later)
     const [counter, setCounter] = useState(0);
     const [addCounter] = useState(1);
+    //array of all users sorted by highest score first
     const [sortedUsers, setSortedUsers] = useState([]);
-
+    //value to check what form should be shown (ChangePasswordForm or App Form)
     const [changeForm, setChangeForm] = useState(false);
 
+    //Function for loading in all users and sorting them
     const loadAllUserData = async () => {
         const response = await fetch('/allUsers');
         const data = await response.json();
@@ -134,12 +52,14 @@ const App = () => {
         setSortedUsers(users);
     }
 
+    //useEffect hook for when the page loads
     useEffect(() => {
-        // logic for loading score and power ups
+        // logic for loading score, powerups, and premium
+        // data is loaded in and various useStates are updated depending on the data
         const loadData = async () => {
-            // setScore(scoreData.score);
             const response = await fetch('/user');
             const data = await response.json();
+            console.log(data);
             setPowerUps(data.user.powerUps);
             if (data.user.powerUps.AutoClicker.Unlocked) {
                 setScoreAddAuto(data.user.powerUps.AutoClicker.UpdatedIncrement / 2);
@@ -151,14 +71,13 @@ const App = () => {
             setUserPremium(data.user.premium);
             setLoading(true);
         }
+        //Call functions to load all necessary program data
         loadData();
         loadAllUserData();
     }, []);
 
-    useEffect(() => {
-        console.log(sortedUsers);
-    }, [sortedUsers])
-
+    //useEffect hook for the autoclicker upgrade
+    //score is incremented every second
     useEffect(() => {
         if (powerUps.AutoClicker.Unlocked) {
             const timer = setTimeout(() => ticking && setScore(score + scoreAddAuto), 1e3);
@@ -166,11 +85,17 @@ const App = () => {
         }
     }, [score, ticking]);
 
+    //useEffect hook for saving user data and retrieving all user data for the leaderboard every 10 seconds
+    //only runs when loading is set to true and when counter is changed
     useEffect(() => {
         if (loading) {
+            //save user data
             helper.sendPost('/user', { score, powerUps, premium: userPremium });
             console.log('saved');
+            //load all user data
             loadAllUserData();
+            //set a timer that purely changes the value of counter after 10 seconds,
+            //which invokes this hook once more
             const timer = setTimeout(() => {
                 setCounter(counter + addCounter);
             }, 10000);
@@ -178,10 +103,15 @@ const App = () => {
         }
     }, [loading, counter]);
 
+    //Function for setting score with new value (scoreAdd)
+    //Necessary functionality for the more score per click upgrade
     const addScore = () => {
         setScore(score + scoreAdd);
     }
 
+    //Function that runs when the auto clicker power up is bought
+    //Necessary upgrade data is set, along with a new cost and new increment
+    //Powerups state is updated with the new data
     const autoClickerBuy = () => {
         if (score >= powerUps.AutoClicker.UpdatedCost) {
             setScoreAddAuto(powerUps.AutoClicker.UpdatedIncrement);
@@ -201,7 +131,15 @@ const App = () => {
         }
     };
 
+    //Function that runs when the more score per click power up is bought
+    //Necessary upgrade data is set, along with a new cost and new increment
+    //Powerups state is updated with the new data
     const moreScoreBuy = () => {
+        if (!userPremium) {
+            alert('You must be a premium user to buy this item.');
+            return;
+        }
+
         if (score >= powerUps.MoreScore.UpdatedCost) {
             setScore(score -= powerUps.MoreScore.UpdatedCost);
             setScoreAdd(powerUps.MoreScore.UpdatedIncrement);
@@ -210,30 +148,6 @@ const App = () => {
             setPowerUps({
                 ...powerUps,
                 MoreScore: {
-                    Unlocked: true,
-                    Prem: false,
-                    UpdatedCost: newCost,
-                    UpdatedIncrement: newIncrement
-                }
-            });
-            console.log(powerUps);
-        }
-    };
-
-    const premiumBuy = () => {
-        if (!userPremium) {
-            alert('You must be a premium user to buy this item.');
-            return;
-        }
-
-        if (score >= powerUps.Premium.UpdatedCost) {
-            setScore(score -= powerUps.Premium.UpdatedCost);
-            //setScoreAdd(powerUps.MoreScore.UpdatedIncrement);
-            let newCost = powerUps.Premium.UpdatedCost * 2;
-            let newIncrement = powerUps.Premium.UpdatedIncrement * 2;
-            setPowerUps({
-                ...powerUps,
-                Premium: {
                     Unlocked: true,
                     Prem: true,
                     UpdatedCost: newCost,
@@ -244,7 +158,7 @@ const App = () => {
         }
     };
 
-
+    //Shop data object that holds all the necessary power up data for displaying
     const data = {
         "AutoClicker": {
             func: autoClickerBuy,
@@ -257,12 +171,6 @@ const App = () => {
             cost: powerUps.MoreScore.UpdatedCost,
             increment: powerUps.MoreScore.UpdatedIncrement,
             premium: powerUps.MoreScore.Prem,
-        },
-        "Premium": {
-            func: premiumBuy,
-            cost: powerUps.Premium.UpdatedCost,
-            increment: powerUps.Premium.UpdatedIncrement,
-            premium: powerUps.Premium.Prem
         }
     }
     return (
@@ -280,7 +188,7 @@ const App = () => {
             {changeForm ? 
                 <ChangePasswordWindow /> :
                 <div className="container">
-                    <LeaderBoard className="item" users={sortedUsers} />
+                    <Leaderboard className="item" users={sortedUsers} />
                     <div className="item">
                         <p>Score: {score}</p>
                         <ClickButton score={addScore} />
@@ -294,12 +202,6 @@ const App = () => {
 
 const init = () => {
     const root = createRoot(document.getElementById('app'));
-    // const changePasswordButton = document.getElementById('changePasswordButton');
-    // changePasswordButton.addEventListener('click', (e) => {
-    //     e.preventDefault();
-    //     root.render(<ChangePasswordWindow />);
-    //     return false;
-    // });
     root.render(<App />);
 };
 

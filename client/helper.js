@@ -3,12 +3,15 @@
    end in an error.
 */
 const handleError = (message) => {
-    console.log(message);
+    //console.log(message);
+    document.getElementById("errorMessage").textContent = message;
+    document.getElementById('errorMessage').classList.remove('hidden');
+    console.log(message)
   };
   
-  /* Sends post requests to the server using fetch. Will look for various
-     entries in the response JSON object, and will handle them appropriately.
-  */
+/* Sends post requests to the server using fetch. Will look for various
+    entries in the response JSON object, and will handle them appropriately.
+*/
 const sendPost = async (url, data, handler) => {
     console.log(JSON.stringify(data));
 
@@ -21,6 +24,7 @@ const sendPost = async (url, data, handler) => {
     });
   
     const result = await response.json();
+    document.getElementById('errorMessage').classList.add('hidden');
   
     if(result.redirect) {
       window.location = result.redirect;
