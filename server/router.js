@@ -19,6 +19,8 @@ const router = (app) => {
   app.get('/game', mid.requiresLogin, controllers.Account.gamePage);
 
   app.get('/', mid.requiresSecure, mid.requiresLogout, controllers.Account.loginPage);
+
+  app.get('*', controllers.Account.errorPage);
 };
 
 module.exports = router;

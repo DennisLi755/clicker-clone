@@ -5,6 +5,8 @@ const { Account } = models;
 
 const loginPage = (req, res) => res.render('login');
 
+const errorPage = (req, res) => res.render('error');
+
 const logout = (req, res) => {
   console.log('in logout function');
   req.session.destroy();
@@ -120,6 +122,7 @@ const getAllUsers = async (req, res) => {
 };
 
 module.exports = {
+  errorPage,
   loginPage,
   login,
   logout,
